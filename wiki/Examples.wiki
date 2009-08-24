@@ -1,4 +1,5 @@
 #summary Two examples
+#labels Featured
 
 = Examples =
 
