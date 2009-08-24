@@ -1,11 +1,8 @@
 #summary A quick introduction
 #labels Featured
 
-= Introduction =
-LayerCache is a simple caching framework which allows you to easily plug in layered caching with your application.
-
 = Description =
-
+LayerCache is a simple caching framework which allows you to easily plug in layered caching with your application.
 
 = Example =
 Source classes:
