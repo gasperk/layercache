@@ -4,8 +4,11 @@
 = Introduction =
 LayerCache is a simple caching framework which allows you to easily plug in layered caching with your application.
 
-== Example ==
-Source objects:
+= Description =
+
+
+= Example =
+Source classes:
 {{{
 class UserProfileSource
 {
@@ -27,7 +30,7 @@ class UserProfileSource
   }
 }
 
-class SomethingCalculatedSource
+class SomethingCalculated
 {
   function normalizeKey($key)
   {
@@ -44,4 +47,24 @@ class SomethingCalculatedSource
 
 Prepare cache stacks:
 {{{
+$database = ... // create a database object to be used with UserProfileSource
+$memcache = new Memcache; // prepare a memcache object to be used in a stack
+
+LayerCache::
+  forSource(new UserProfileSource($database))->
+  addCache(new LayerCache_Cache_Memcache($memcache))->withTTL(3600)->
+  addCache(new LayerCache_Cache_APC)->withTTL(600)->
+  toStack('UserProfile');
+
+LayerCache::
+  forSource(new SomethingCalculated)->
+  addCache(new LayerCache_Cache_APC)->withTTL(180)->
+  addCache(new LayerCache_Cache_Local)->
+  toStack('calculation');
+}}}
+
+Now, use the cache stacks:
+{{{
+$user_profile = LayerCache::stack('UserProfile')->get(43);
+$calc = LayerCache::stack('calculation')->get(array('a' => 65, 'b' => 2340);
 }}}
