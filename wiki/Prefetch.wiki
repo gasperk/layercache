@@ -20,6 +20,7 @@ This results in a much less requests to the source, i.e. the database.
 
 == An example ==
 To enable prefetch, you have to specify it for each cache you add to a stack.
+{{{
 LayerCache::
   forSource(new SomeDataSource)->
   addCache(new LayerCache_Cache_Memcache($memcache))->withTTL(360)->withPrefetch(60, 0.01)->
