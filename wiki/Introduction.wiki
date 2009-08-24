@@ -31,7 +31,7 @@ class SomethingCalculated
 {
   function normalizeKey($key)
   {
-    return "calc-{$key['a']}-{$key['b'}";
+    return "calc-{$key['a']}-{$key['b']}";
   }
 
   function get($key)
