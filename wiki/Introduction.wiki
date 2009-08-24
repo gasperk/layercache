@@ -1,0 +1,47 @@
+#summary A quick introduction
+#labels Featured
+
+= Introduction =
+LayerCache is a simple caching framework which allows you to easily plug in layered caching with your application.
+
+== Example ==
+Source objects:
+{{{
+class UserProfileSource
+{
+  protected $db;
+  
+  function __construct($db)
+  {
+    $this->db = $db;
+  }
+  
+  function normalizeKey($key)
+  {
+    return "userprofile/" . $key;
+  }
+
+  function get($key)
+  {
+    return $this->db->query('select * from user_profile where user_id = ' . intval($key));
+  }
+}
+
+class SomethingCalculatedSource
+{
+  function normalizeKey($key)
+  {
+    return "calc-{$key['a']}-{$key['b'}";
+  }
+
+  function get($key)
+  {
+    // perform a calculation
+    return $key['a'] * sqrt($key['b']) * (22 / 7);
+  }
+}
+}}}
+
+Prepare cache stacks:
+{{{
+}}}
