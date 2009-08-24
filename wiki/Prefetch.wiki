@@ -1,4 +1,4 @@
-#summary Prefetching the data, before it times out
+#summary Prefetching the data before it times out
 
 = Prefetching the data =
 
