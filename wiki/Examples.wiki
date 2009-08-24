@@ -6,7 +6,7 @@ Here are a few examples that will help you get started.
 
 == Example 1: caching a user profile in Memcache and APC ==
 
-First, let's define a _source object_. In this example, the source object uses database.
+First, let's define a _source object_. In this example, the source object uses a database.
 
 {{{
 class UserProfileSource
