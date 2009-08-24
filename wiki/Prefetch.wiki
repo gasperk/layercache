@@ -1,3 +1,12 @@
 #summary Prefetching the data, before it times out
 
-= Prefetch =
+= Prefetching the data =
+
+== The problem ==
+When an item in the cache is too old, it gets removed. Likewise, if the cache is too small, some items are evicted prematurely, in order to make place for newer items. At that moment, all reads for such items will return null, and the data will be requested from the source (i.e. the database). The data will then be written to the caches, so it'll be available from there for subsequent reads.
+
+But, if the number of requests for a certain item is high, several clients will detect a cache miss at the same time, and all of them will read the data from the source. For example, if there is 100 requests for an item per second, a few ten (up to a hundred) identical queries will be issued to the database. Database cache can help you here, but not necessarily. MySQL cache, for example, has [http://www.mysqlperformanceblog.com/2006/07/27/mysql-query-cache/ a few problems].
+
+== The solution ==
+
+== A new problem ==
