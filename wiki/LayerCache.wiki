@@ -1,5 +1,0 @@
-#summary LayerCache
-
-= LayerCache =
-
-This is it.
