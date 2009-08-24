@@ -4,10 +4,24 @@
 == Description ==
 LayerCache is a simple caching framework for PHP5 which allows you to easily plug a layered caching mechanism into your application.
 
-It implements the concept of layered caching where an item can be cached in several layers. When you request an item, the framework reads from each cache in the stack. If the item is present, it's returned, if it isn't, it's retrieved from the source and stored in all caches in the layer.
+It implements the concept of layered caching where an item can be cached in several layers. When you request an item, the framework reads from each cache in the stack. If the item is present, it's returned, if it isn't, it's retrieved from the source and stored in all caches in the stack.
 
-== Example ==
-Source classes:
+== The basics ==
+First, let's get familiar with the concept, terms and basics.
+
+For each type of item you want to cache (i.e. user profile, partial html, complex calculation), you have to create _a stack_. A stack is composed of a Source object and several caches, and has a unique name. Each stack can have different caches and a different source.
+
+The source object is an object that you must create and pass to LayerCache. It has to implement two methods: normalizeKey($key) and get($key). The first method should map your custom $key into a string value; this value is used as a key for storing in every cache layer.
+
+For example, if you're caching user profiles, your custom key will probably be an integer ID from the database, say 79. The normalizeKey() method would map this integer value into a string, such as "users/79". This string representation of the key should be unique across all different cachable items. If you also cache some other type of item with id=79, the string representations should differ.
+
+It's used when the item isn't found in any cache.
+
+== Simple example ==
+In this simple example, I will try to show the basics.
+
+First, let's define a source. A source is a class that must implement two methods: normalizeKey($key) and get($key). The first method maps your custom key into a string value.
+
 {{{
 class UserProfileSource
 {
@@ -66,4 +80,19 @@ Now, use the cache stacks:
 {{{
 $user_profile = LayerCache::stack('UserProfile')->get(43);
 $calc = LayerCache::stack('calculation')->get(array('a' => 65, 'b' => 2340);
+}}}
+
+{{{
+class VerySimpleDataSource
+{
+  function normalizeKey($key)
+  {
+    return "$key";
+  }
+  
+  function get($key)
+  {
+    return $key * $key;
+  }
+}
 }}}
