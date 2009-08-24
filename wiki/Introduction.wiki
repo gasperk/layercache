@@ -1,15 +1,12 @@
 #summary What is LayerCache
 #labels Featured
 
-= Description =
+== Description ==
 LayerCache is a simple caching framework for PHP5 which allows you to easily plug a layered caching mechanism into your application.
 
 It implements the concept of layered caching where an item can be cached in several layers. When you request an item, the framework reads from each cache in the stack. If the item is present, it's returned, if it isn't, it's retrieved from the source and stored in all caches in the layer.
 
-= When and why use caching? =
-First things first. Caching is optimization, so [http://www.c2.com/cgi/wiki?PrematureOptimization rules] [http://en.wikipedia.org/wiki/Premature_optimization apply]. Now that we've got that cleared up, let's consider a real-life example of when to use cache.
-
-= Example =
+== Example ==
 Source classes:
 {{{
 class UserProfileSource
