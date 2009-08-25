@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+
+<project name="LayerCache" default="help" basedir=".">
+	
+	<target name="prepare">
+		<delete includeemptydirs="true">
+			<fileset dir=".">
+				<include name="export/**" />
+			</fileset>
+		</delete>
+		<mkdir dir="./export" />
+		<mkdir dir="./export/project" />
+		<mkdir dir="./export/lib" />
+		<mkdir dir="./export/doc" />
+		<mkdir dir="./dist" />
+	</target>
+
+	<target name="export" depends="prepare">
+		<property name="svn.root" value="http://layercache.googlecode.com/svn/" />
+		<fail unless="path" message="You must specify the branch (relative to root of source)!" />
+		
+		<if>
+			<equals arg1="${source}" arg2="svn" />
+			<then>
+				<echo>Using SVN: ${svn.root}${path}</echo>
+				
+				<svnexport
+				   force="true"
+				   nocache="true"
+				   repositoryurl="${svn.root}${path}"
+				   todir="./export/project" />
+			</then>
+			<elseif>
+				<equals arg1="${source}" arg2="local" />
+				<then>
+					<echo>Using local: ${path}</echo>
+					<copy todir="./export/project" >
+					  <fileset dir="${path}">
+						<include name="**/**" />
+					  	<exclude name=".svn" />
+					  	<exclude name=".project" />
+					  </fileset>
+					</copy>
+				</then>
+			</elseif>
+			<else>
+				<fail message="Invalid source. Must be 'svn' or 'local'." />
+			</else>
+		</if>
+		<fail/>
+	</target>
+	
+	<target name="build" depends="export">
+		<fail unless="version" message="You must specify version (i.e. -Dversion=&quot;9.09.01&quot;)!" />
+		<php function="str_replace" returnProperty="build.version">
+			<param value=" " />
+			<param value="-" />
+			<param value="${version}" />
+		</php>
+		
+		<tstamp>
+			<format property="build.date" pattern="%Y-%m-%d" locale="en_US"/>
+		</tstamp>
+		
+		<reflexive>
+			<fileset dir="./export/project">
+				<include pattern="VERSION" />
+				<include pattern="**/*.php" />
+			</fileset>
+			
+			<filterchain>
+			  <replacetokens begintoken="##" endtoken="##">
+				<token key="VERSION" value="${version}" />
+				<token key="BUILDDATE" value="${build.date}" />
+			  </replacetokens>
+			</filterchain>
+		</reflexive>
+		
+		<exec command="phpunit export/project/tests/" returnProperty="res" />
+		<if>
+			<equals arg1="${res}" arg2="0" />
+			<then>
+				<echo>Unit tests .. OK</echo>
+			</then>
+			<else>
+				<fail message="Unit tests failed with ${res}, try php export/project/tests/run-tests.php" />
+			</else>
+		</if>
+		
+		<property name="distfile.gz" value="dist/layercache-${build.version}.tar.gz" />
+		<delete file="${distfile.gz}" />
+		<tar destfile="${distfile.gz}" compression="gzip">
+			<fileset dir="export/project">
+				<include name="**/**" />
+			</fileset>
+		</tar>
+		
+		<exec command="gzip -tv ${distfile.gz}" returnProperty="res" />
+		<if>
+			<equals arg1="${res}" arg2="0" />
+			<then>
+				<echo>${distfile.gz} test .. OK</echo>
+			</then>
+			<else>
+				<fail message="GZIP test failed with error code ${res}, try gzip -tv ${distfile.gz}" />
+			</else>
+		</if>
+		
+		<property name="distfile.zip" value="dist/layercache-${build.version}.zip" />
+		<delete file="${distfile.zip}" />
+		<zip destfile="${distfile.zip}">
+			<fileset dir="export/project">
+				<include name="**/**" />
+			</fileset>
+		</zip>
+		
+		<exec command="unzip -t ${distfile.zip}" returnProperty="res" />
+		<if>
+			<equals arg1="${res}" arg2="0" />
+			<then>
+				<echo>${distfile.zip} test .. OK</echo>
+			</then>
+			<else>
+				<fail message="ZIP test failed with error code ${res}, try unzip -t ${distfile.zip}" />
+			</else>
+		</if>
+		
+	</target>
+	
+	<target name="test">
+		<exec command="php test.php" passthru="true" returnProperty="res" />
+		<echo>${res}</echo>
+	</target>
+	
+	<target name="help">
+		<echo>Tasks: build</echo>
+		<echo>Params: source (svn, local), path (relative to source root), version (1.0 RC1)</echo>
+	</target>
+</project>
+
