@@ -10,6 +10,7 @@
 		</delete>
 		<mkdir dir="./export" />
 		<mkdir dir="./export/project" />
+		<mkdir dir="./export/project/doc" />
 		<mkdir dir="./export/lib" />
 		<mkdir dir="./export/doc" />
 		<mkdir dir="./dist" />
@@ -23,7 +24,6 @@
 			<equals arg1="${source}" arg2="svn" />
 			<then>
 				<echo>Using SVN: ${svn.root}${path}</echo>
-				
 				<svnexport
 				   force="true"
 				   nocache="true"
@@ -47,7 +47,6 @@
 				<fail message="Invalid source. Must be 'svn' or 'local'." />
 			</else>
 		</if>
-		<fail/>
 	</target>
 	
 	<target name="build" depends="export">
@@ -87,10 +86,47 @@
 			</else>
 		</if>
 		
-		<property name="distfile.gz" value="dist/layercache-${build.version}.tar.gz" />
+		<exec command="phpdoc -o HTML:Smarty:PHP -d export/project/lib/ -t export/project/doc" />
+		<copy todir="./export/doc" >
+		  <fileset dir="./export/project/doc">
+			<include name="**/**" />
+		  </fileset>
+		</copy>
+		
+		<copy todir="./export/lib" >
+		  <fileset dir="./export/project/lib">
+			<include name="**/**" />
+		  </fileset>
+		  <fileset dir="./export/project/">
+			<include name="GNU-GPL" />
+			<include name="GNU-LGPL" />
+			<include name="README" />
+			<include name="LICENSE" />
+			<include name="VERSION" />
+		  </fileset>
+		</copy>
+		
+		<phingcall target="-make-package">
+			<property name="build.package" value="-full" />
+			<property name="package.dir" value="project" />
+		</phingcall>
+		
+		<phingcall target="-make-package">
+			<property name="build.package" value="-doc" />
+			<property name="package.dir" value="doc" />
+		</phingcall>
+		
+		<phingcall target="-make-package">
+			<property name="build.package" value="-lib" />
+			<property name="package.dir" value="lib" />
+		</phingcall>
+	</target>
+	
+	<target name="-make-package">
+		<property name="distfile.gz" value="dist/layercache-${build.version}${build.package}.tar.gz" />
 		<delete file="${distfile.gz}" />
 		<tar destfile="${distfile.gz}" compression="gzip">
-			<fileset dir="export/project">
+			<fileset dir="export/${package.dir}">
 				<include name="**/**" />
 			</fileset>
 		</tar>
@@ -106,10 +142,10 @@
 			</else>
 		</if>
 		
-		<property name="distfile.zip" value="dist/layercache-${build.version}.zip" />
+		<property name="distfile.zip" value="dist/layercache-${build.version}${build.package}.zip" />
 		<delete file="${distfile.zip}" />
 		<zip destfile="${distfile.zip}">
-			<fileset dir="export/project">
+			<fileset dir="export/${package.dir}">
 				<include name="**/**" />
 			</fileset>
 		</zip>
@@ -124,7 +160,6 @@
 				<fail message="ZIP test failed with error code ${res}, try unzip -t ${distfile.zip}" />
 			</else>
 		</if>
-		
 	</target>
 	
 	<target name="test">
