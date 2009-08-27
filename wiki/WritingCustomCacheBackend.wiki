@@ -1,0 +1,39 @@
+#summary Tutorial how to write a custom cache backend interface
+
+= Writing a custom backend =
+Writing a custom cache backend is very easy. All you need is a class with read($key) and write($key, $value, $ttl) methods. You have to ensure that read() returns null if item isn't present or is stale (if your cache supports ttl). That's all.
+
+== Example ==
+Let's say I want a very simple cache backend that caches in an array. Here's the cache backend class:
+{{{
+class ArrayCache
+{
+  protected $items = array();
+  
+  function read($key)
+  {
+    if (isset($this->items[$key]))
+      return $this->items[$key];
+  }
+
+  function write($key, $value, $ttl)
+  {
+    $this->items[$key] = $value;
+  }
+}
+}}}
+
+Now let's use this.
+{{{
+LayerCache::
+  forSource(new SomeSource)->
+  addCache(new ArrayCache)->
+  toStack('items');
+
+echo LayerCache::stack('items')->get('a');
+echo LayerCache::stack('items')->get('b');
+}}}
+
+This is a simple array cache, which stores items in an array. The array gets destroyed when the request finishes, so it's not of much use. Besides, LayerCache already has such a cache, named LayerCache_Cache_Local. This is a PHP array LRU cache, enabling you to limit the number of entries or size stored in cache.
+
+== Adding TTL ==
