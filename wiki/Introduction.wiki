@@ -17,4 +17,6 @@ For example, if you're caching user profiles, your _custom key_ will probably be
 
 When you read an item, you call _get()_ method on the stack, and pass it your _custom key_. The stack first gets the _cache key_ for the item by calling _normalizeKey()_ method of the _source object_. Then it reads each cache in the stack, one by one. If the data is present (and valid), it's returned. If the data isn't present (or valid) in any of the caches in the stack, the method _get()_ of the _source object_ is called, and the _custom key_ is passed to it. The object should return the result, which is then cached in every cache in the stack. The result can be an array or an object, because LayerCache serializes the data prior to writing it in any cache layer.
 
-You can see some examples [Examples here].
+== More information ==
+  * [Examples]
+  * [UnderstandingLayeredCaching]
