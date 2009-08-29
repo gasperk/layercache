@@ -3,7 +3,7 @@
 
 = Examples =
 
-Here are a few examples that will help you get started.
+Here are a few examples that will help you get started. For details on how to specify the cache source, see SpecifyingSource.
 
 == Example 1: caching a user profile in Memcache and APC ==
 
