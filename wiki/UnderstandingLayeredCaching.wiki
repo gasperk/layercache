@@ -1,4 +1,5 @@
 #summary A brief explanation of layered caching
+#labels Featured
 
 = Layered caching =
 
