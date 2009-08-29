@@ -42,7 +42,7 @@ LayerCache::forSource('getData', 'normalizeKey')-> ...
 
 An example of usage with Propel show how to use the existing retrieveByPK, along with a new mapKey method.
 {{{
-class UserProfilePeer
+class UserProfilePeer extends BaseUserProfilePeer
 {
   static function mapKey($id)
   {
