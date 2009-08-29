@@ -1,0 +1,10 @@
+#summary A brief explanation of layered caching
+
+= Layered caching =
+
+== The principle ==
+Layered caching is well-known and often used concept. The idea is to have several caches stacked together. Usually, the first cache is the fastest and smallest, and each next cache is bigger and slower. The reason for that is that fast cache is usually more expensive (CPU cache), so it comes in smaller quantities.
+
+Because the first level cache is the smallest, only the most accessed data is stored in it, other data gets flushed. This ensures that the access to the most needed data is always fast.
+
+== How layers affect the life-time of data ==
