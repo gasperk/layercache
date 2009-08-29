@@ -7,4 +7,15 @@ Layered caching is well-known and often used concept. The idea is to have severa
 
 Because the first level cache is the smallest, only the most accessed data is stored in it, other data gets flushed. This ensures that the access to the most needed data is always fast.
 
+== Cache sizes and TTL ==
+Imagine a very simple layout: a single web-server with APC and 1 Memcache node, with equal space for cache.
+
+In this layout, setting item's TTL in APC higher than TTL of the same item in Memcache, doesn't make sense, because when that item in APC will timeout, so will the same item in Memcache. Then item will have to be read from the source, will be written to Memcache and APC, and it will timeout again. In this case, it's usually better to use a single cache layer.
+
+With a more complex layout (several APC and Memcache nodes), things change. When an item time-outs in one of the APC nodes, it may still be present in the Memcache, because there's a chance that the same item already time-outed on another APC node and wrote to Memcache.
+
+Also, size of the caches can affect the fetches. Even with the same TTL, items may be evicted from APC earlier, if APC cache size is smaller, and space was needed to cache other items.
+
+The most common configuration is to use shorter TTL on faster caches, which are usually smaller, too. But this may differ depending on your infrastructure.
+
 == How layers affect the life-time of data ==
