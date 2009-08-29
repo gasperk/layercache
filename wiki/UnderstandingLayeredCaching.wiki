@@ -26,4 +26,6 @@ Here's the image that shows the timeline and the values in cache.
 [http://layercache.googlecode.com/svn/wiki/images/multi-layer-cache-ttl.png]
 
 == Best practice ==
-It's probably best to stack caches in decreasing order by size and TTL.
+It's probably best to stack caches in decreasing order by size and TTL and increasing order by speed.
+
+See [http://www.mysqlperformanceblog.com/2006/08/09/cache-performance-comparison/ Cache Performance Comparison] on MySQL Performance Blog for cache speed comparison. As you can read in the comments there, the performance varies depending on the architecture, so don't forget to profile your system. APC seems to cause problems with many writes (it's very fast for reading), so make sure you use [Prefetch prefetch] feature.
