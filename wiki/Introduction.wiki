@@ -2,7 +2,7 @@
 #labels Featured
 
 == Description ==
-LayerCache is a simple caching framework for PHP5 which allows you to easily plug a layered caching mechanism into your application.
+LayerCache is a simple caching framework for PHP5 which allows you to easily plug a multi-layered caching mechanism into your application.
 
 It implements the concept of layered caching where an item can be cached in several layers. When you request an item, the framework reads from each cache in the stack. If the item is present, it's returned, if it isn't, it's retrieved from the source and stored in all caches in the stack.
 
