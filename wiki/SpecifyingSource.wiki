@@ -1,3 +1,54 @@
 #summary Specifying source
 
 = Specifying cache source =
+There are two ways to specify a cache source.
+
+== Specify a source object ==
+Pass an object to the forSource() method. The object must implement get($key) and normalizeKey($key) methods.
+
+{{{
+class MySource
+{
+  function get($key)
+  {
+    return "mydata";
+  }
+
+  function normalizeKey($key)
+  {
+    return "$key";
+  }
+}
+
+LayerCache::forSource(new MySource)-> ...
+}}}
+
+== Specify data and key callbacks ==
+The other way of specifying cache source is to pass two callbacks, one for data and one for key. Both callbacks can be [http://si.php.net/callback any type of callback that PHP supports]; object method, class (static) method, create_function construct, a closure, and even a global function.
+
+{{{
+function getData($key)
+{
+  return "data for $key";
+}
+
+function normalizeKey($key)
+{
+  return "mykey-$key";
+}
+
+LayerCache::forSource('getData', 'normalizeKey')-> ...
+}}}
+
+An example of usage with Propel show how to use the existing retrieveByPK, along with a new mapKey method.
+{{{
+class UserProfilePeer
+{
+  static function mapKey($id)
+  {
+    return "user-prof/$id";
+  }
+}
+
+LayerCache::forSource(array('UserProfilePeer', 'retrieveByPK'), array('UserProfilePeer', 'mapKey'))-> ...
+}}}
