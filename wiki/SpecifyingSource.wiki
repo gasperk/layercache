@@ -24,21 +24,8 @@ LayerCache::forSource(new MySource)-> ...
 }}}
 
 == Specify data and key callbacks ==
-The other way of specifying cache source is to pass two callbacks, one for data and one for key. Both callbacks can be [http://si.php.net/callback any type of callback that PHP supports]; object method, class (static) method, create_function construct, a closure, and even a global function.
+The other way of specifying cache source is to pass two callbacks, one for data and one for key. Both callbacks can be [http://si.php.net/callback any type of callback that PHP supports]; object method, class (static) method, create_function construct, a closure (since PHP 5.3), and even a global function.
 
-{{{
-function getData($key)
-{
-  return "data for $key";
-}
-
-function normalizeKey($key)
-{
-  return "mykey-$key";
-}
-
-LayerCache::forSource('getData', 'normalizeKey')-> ...
-}}}
 
 An example of usage with Propel show how to use the existing retrieveByPK, along with a new mapKey method.
 {{{
@@ -51,4 +38,9 @@ class UserProfilePeer extends BaseUserProfilePeer
 }
 
 LayerCache::forSource(array('UserProfilePeer', 'retrieveByPK'), array('UserProfilePeer', 'mapKey'))-> ...
+}}}
+
+Another Propel example, this time the key-function is a closure (PHP 5.3+).
+{{{
+LayerCache::forSource(array('UserProfilePeer', 'retrieveByPK'), function ($key) { return "user/$key"; })-> ...
 }}}
