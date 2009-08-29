@@ -19,4 +19,6 @@ Also, size of the caches can affect the fetches. Even with the same TTL, items m
 The most common configuration is to use shorter TTL on faster caches, which are usually smaller, too. But this may differ depending on your infrastructure.
 
 == How layers affect the life-time of data ==
-If a cache miss occurs, the request is issued on the next cache layer. If the item is present there, it's written in the former cache with the specified TTL.
+If a cache miss occurs, the request is issued on the next cache layer. If the item is present there, it's written in the former cache with the specified TTL. This effectively means that the actual life-time of an item is (in the worst case) the sum of all TTLs, specified in the stack.
+
+[http://layercache.googlecode.com/svn/wiki/images/multi-layer-cache-ttl.png]
