@@ -50,11 +50,11 @@ An example will clear things up. Imagine an item is requested 10 times per secon
     * the probability is very low, so no prefetch will occur
     * same for each second
     * within 60 seconds and 10 requests per second, 600 requests are made
-    * the probability for any item going for prefetch is 600 * 0.001 = 0.6, so prefetch will likely happen only for 60% of cache timeouts, which is bad
+    * the probability for any item going for prefetch is 600 × 0.001 = 0.6, so prefetch will likely happen only for 60% of cache timeouts, which is bad
     * this is called under-prefetching, because prefetch doesn't happen often enough
   * time=120, probability=0.01
     * within 120 seconds, 1200 requests are made, and each has probability of 0.01 to go for prefetch
-    * 1200 * 0.01 = 12 requests are likely to go for prefetch within 120 seconds
+    * 1200 × 0.01 = 12 requests are likely to go for prefetch within 120 seconds
     * most likely these won't happen at the same time
     * so only one (or a few) would go and read the item from the database
     * the item will be fresh, so prefetch won't be considered for another 9 minutes
