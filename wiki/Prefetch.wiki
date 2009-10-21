@@ -36,14 +36,29 @@ An example will clear things up. Imagine an item is requested 10 times per secon
     * ideally, we succeed in writing the item to the cache after two seconds
     * all next requests will read the item from the cache
     * we got 20 cache misses which all resulted in database read (20 queries)
+    * this is called database-slamming
   * time=60, probability=0.5
-    * the last 60 seconds of the resource life-time (last minute before eviction), prefetch will be considered with 0.5 probability
-    * there are 10 requests for a resource per second
-    * each request will be prefetching the resource with probability 0.5
-    * so, 5 of 10 requests will prefetch the resource in the first second of the prefetch period (last minute)
-    * the resource will be written in cache with new TTL, so prefetch is done
+    * the last 60 seconds of the item's life-time (last minute before eviction), prefetch will be considered with 0.5 probability
+    * each request will be prefetching the item with probability 0.5
+    * so, 5 of 10 requests will read the item from the database in the first second of the prefetch period (second 541)
+    * the next second (542), another 5 requests will re-read the item from database
+    * the item will be written in cache with a new TTL, so prefetch is done
+    * we got 10 misses and database reads in two seconds, and only 540s (9 minutes) of effective cache
     * this is called over-prefetching, because too many prefetches happened, and the feature behaves almost exactly like having no cache
-  * time=60, probability=0.00001
+  * time=60, probability=0.001
+    * in second #541, 10 requests will consider prefetch with probability 0.001
+    * the probability is very low, so no prefetch will occur
+    * same for each second
+    * within 60 seconds and 10 requests per second, 600 requests are made
+    * the probability for any item going for prefetch is 600 * 0.001 = 0.6, so prefetch will likely happen only for 60% of cache timeouts, which is bad
+    * this is called under-prefetching, because prefetch doesn't happen often enough
+  * time=120, probability=0.01
+    * within 120 seconds, 1200 requests are made, and each has probability of 0.01 to go for prefetch
+    * 1200 * 0.01 = 12 requests are likely to go for prefetch within 120 seconds
+    * most likely these won't happen at the same time
+    * so only one (or a few) would go and read the item from the database
+    * the item will be fresh, so prefetch won't be considered for another 9 minutes
+    * we got ideal prefetch
 
 == An example ==
 To enable prefetch, you have to specify it for each cache you add to a stack.
