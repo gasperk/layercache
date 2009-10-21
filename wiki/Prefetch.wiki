@@ -52,13 +52,13 @@ An example will clear things up. Imagine an item is requested 10 times per secon
     * within 60 seconds and 10 requests per second, 600 requests are made
     * the probability for any item going for prefetch is 600 × 0.001 = 0.6, so prefetch will likely happen only for 60% of cache timeouts, which is bad
     * this is called under-prefetching, because prefetch doesn't happen often enough
-  * time=120, probability=0.01
-    * within 120 seconds, 1200 requests are made, and each has probability of 0.01 to go for prefetch
-    * 1200 × 0.01 = 12 requests are likely to go for prefetch within 120 seconds
-    * most likely these won't happen at the same time
-    * so only one (or a few) would go and read the item from the database
-    * the item will be fresh, so prefetch won't be considered for another 9 minutes
-    * we got ideal prefetch
+  * time=30, probability=0.03
+    * within 30 seconds, 300 requests are made, and each has probability of 0.03 to go for prefetch
+    * 300 × 0.03 = 9 requests are likely to go for prefetch within last 30 seconds
+    * most likely these won't happen at the same time (9 in 30 seconds is 1 every 3.3 seconds)
+    * so only one would go and read the item from the database
+    * the item will then be fresh, so prefetch won't be considered for another 9.5 minutes
+    * we got ideal prefetch: only one (or a few) queries issued and the item stays fresh for 9.5 minutes before prefetch occurs
 
 == An example ==
 To enable prefetch, you have to specify it for each cache you add to a stack.
