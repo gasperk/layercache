@@ -1,7 +1,11 @@
 #summary Tutorial how to write a custom cache backend interface
 
 = Writing a custom backend =
-Writing a custom cache backend is very easy. All you need is a class with read($key) and write($key, $value, $ttl) methods. You have to ensure that read() returns null if item isn't present or is stale (if your cache supports ttl). That's all.
+Writing a custom cache backend is very easy. All you need is a class with a getter and a setter:
+  - it has to implement get($key) and set($key, $value, $ttl) methods
+  - you have to ensure that get() returns *null* if item isn't present or is stale
+
+That's all.
 
 == Example ==
 Let's say I want a very simple cache backend that caches in an array. Here's the cache backend class:
@@ -10,13 +14,13 @@ class ArrayCache
 {
   protected $items = array();
   
-  function read($key)
+  function get($key)
   {
     if (isset($this->items[$key]))
       return $this->items[$key];
   }
 
-  function write($key, $value, $ttl)
+  function set($key, $value, $ttl)
   {
     $this->items[$key] = $value;
   }
@@ -44,7 +48,7 @@ class ArrayCache
 {
   protected $items = array();
   
-  function read($key)
+  function get($key)
   {
     if (isset($this->items[$key]))
     {
@@ -55,7 +59,7 @@ class ArrayCache
     }
   }
 
-  function write($key, $value, $ttl)
+  function set($key, $value, $ttl)
   {
     $this->items[$key] = array('data' => $value, 'expires' => time() + $ttl);
   }
