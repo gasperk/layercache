@@ -76,13 +76,13 @@ As you see, the key to choosing proper time and probability values is how many r
   * prefetchProbability = prefetchCount / (prefetchTime × requestsPerSecond)
 
 Ideal values (empirical):
-  * prefetchTime: between 15 and 60 seconds
+  * prefetchTime: between 15 and 120 seconds
   * requestsPerSecond: your input
   * prefetchProbability: calculated
-  * prefetchCount: between 5 and 10
+  * prefetchCount: between 5 and 30
 
 Where prefetchCount / prefetchTime (prefetches per second) should be as small as possible to reduce simultaneous reads.
 
-Not all items of the same class have equal requestsPerSecond. Some people are prettier than others, so their profile is accessed more often. The most often accessed items make the biggest difference, so choose your parameters according to the most accessed item's requestsPerSecond. Also, if prefetchCount for your most accessed item is 10, it's still in the safe margin for less accessed; for an item that is accessed twice less frequently, prefetchCount is still a safe 5.
+Not all items of the same class have equal requestsPerSecond. Some people are prettier than others, so their profile is accessed more often. The most often accessed items make the biggest difference, so choose your parameters according to the most accessed item's requestsPerSecond. Also, if prefetchCount for your most accessed item is 10, it's still ok for items that are accessed less frequently; half-less frequently accessed item will still have prefetchCount=5, and even 10-times less accessed profiles will most likely benefit from the prefetch. But prefetch won't be much of use for items accessed less often than that (items with prefetchCount < 1), ordinary TTL will step in then. No biggy, since these items are obviously not in high demand, but you can improve this by increasing prefetchTime. This will result in higher prefetchProbability, and will make cache slightly less effective (for prefetchTime=120 you only have 8 minutes of effective cache, compared to 9.5 minutes with prefetchTime=30), but won't cause database slams and will ensure that less requested items will be prefetched instead of TTL'ed also.
 
 The problem remains, how to determine the requestsPerSecond for a single item. I use APC (apc.php) to see how many hits have been made to a certain item within its lifetime; 50000 hits within 15 minutes ~= 55 requests per second. So, I decide to use prefetchTime=30s and prefetchCount=8, and calculate the prefetchProbability = 8 / (30 × 55) ~= 0.005.
