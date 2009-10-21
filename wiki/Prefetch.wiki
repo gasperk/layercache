@@ -65,11 +65,13 @@ As you see, the key to choosing proper time and probability values is how many r
   * prefetchTime × requestsPerSecond × prefetchProbability = prefetchCount
   * prefetchProbability = prefetchCount / (prefetchTime × requestsPerSecond)
 
-Ideal values:
-  * prefetchTime: between 15 and 120 seconds
+Ideal values (empirical):
+  * prefetchTime: between 15 and 60 seconds
   * requestsPerSecond: your input
   * prefetchProbability: calculated
   * prefetchCount: between 5 and 10
+
+Where prefetchCount / prefetchTime (prefetches per second) should be as small as possible.
 
 Not all items of the same class have equal requestsPerSecond. Some people are prettier than others, so their profile is accessed more often. The most often accessed items make the biggest difference, so choose your parameters according to the most accessed item's requestsPerSecond. Also, if prefetchCount for your most accessed item is 10, it's still in the safe margin for less accessed; for an item that is accessed twice less frequently, prefetchCount is still a safe 5.
 
