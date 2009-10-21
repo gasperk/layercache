@@ -60,6 +60,19 @@ An example will clear things up. Imagine an item is requested 10 times per secon
     * the item will then be fresh, so prefetch won't be considered for another 9.5 minutes
     * we got ideal prefetch: only one (or a few) queries issued and the item stays fresh for 9.5 minutes before prefetch occurs
 
+As you see, the key to choosing proper time and probability values is how many requests per second are made. You can use this equation to select the values.
+
+  * prefetchTime × requestsPerSecond × prefetchProbability = prefetchCount
+  * prefetchProbability = prefetchCount / (prefetchTime × requestsPerSecond)
+
+Ideal values:
+  * prefetchTime: between 15 and 120 seconds
+  * requestsPerSecond: your input
+  * prefetchProbability: calculated
+  * prefetchCount: between 5 and 10
+
+Not all items of the same class have equal requestsPerSecond. Some people are prettier than others, so their profile is accessed more often. The most often accessed items make the biggest difference, so choose your parameters according to the most accessed item's requestsPerSecond. Also, if prefetchCount for your most accessed item is 10, it's still in the safe margin for less accessed; for an item that is accessed twice less frequently, prefetchCount is still a safe 5.
+
 == An example ==
 To enable prefetch, you have to specify it for each cache you add to a stack.
 {{{
