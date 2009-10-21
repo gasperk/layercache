@@ -27,8 +27,22 @@ If you decide to use [Prefetch prefetch], you may want to only use it on one cac
 == Choosing time and probability values ==
 These values are important for performance. If sub-optimal values are used, this can result in either under-prefetching or over-prefetching.
 
-An example will clear things up. Imagine a resource is requested 10 times per second. You put it in a cache with TTL=600 (10 minutes). Now let's see how prefetch works for the following values:
+An example will clear things up. Imagine an item is requested 10 times per second. Reading the item from the database takes 2 seconds. You put the item in a cache with TTL=600 (10 minutes). Now let's see how prefetch works for the following values:
+  * no prefetch
+    * an item will be cached for 10 minutes
+    * when it times-out, 10 requests will re-read the item within the first second
+    * because reading the item takes 2 seconds, the item still won't be present in the cache after the first second
+    * another 10 reads will be made to the source in the second second.
+    * ideally, we succeed in writing the item to the cache after two seconds
+    * all next requests will read the item from the cache
+    * we got 20 cache misses which all resulted in database read (20 queries)
   * time=60, probability=0.5
+    * the last 60 seconds of the resource life-time (last minute before eviction), prefetch will be considered with 0.5 probability
+    * there are 10 requests for a resource per second
+    * each request will be prefetching the resource with probability 0.5
+    * so, 5 of 10 requests will prefetch the resource in the first second of the prefetch period (last minute)
+    * the resource will be written in cache with new TTL, so prefetch is done
+    * this is called over-prefetching, because too many prefetches happened, and the feature behaves almost exactly like having no cache
   * time=60, probability=0.00001
 
 == An example ==
