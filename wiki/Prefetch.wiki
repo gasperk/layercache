@@ -24,6 +24,13 @@ This results in a much less requests to the source, i.e. the database. Instead o
 == Use only one prefetch per stack ==
 If you decide to use [Prefetch prefetch], you may want to only use it on one cache in the stack - preferably the last (the last added via addCache, the first that is accessed). While prefetch works fine on any number of layers, it's the probability that renders it unusable on every cache below the first cache with prefetch. Because requests for an item are already reduced by the first prefetch, which reduces the number of reads on the lower caches, it's very probable that items won't be prefetched on lower caches, because not enough requests will be made. It would be the same as with only one prefetch - the last one added via _withPrefetch_.
 
+== Choosing time and probability values ==
+These values are important for performance. If sub-optimal values are used, this can result in either under-prefetching or over-prefetching.
+
+An example will clear things up. Imagine a resource is requested 10 times per second. You put it in a cache with TTL=600 (10 minutes). Now let's see how prefetch works for the following values:
+  * time=60, probability=0.5
+  * time=60, probability=0.00001
+
 == An example ==
 To enable prefetch, you have to specify it for each cache you add to a stack.
 {{{
