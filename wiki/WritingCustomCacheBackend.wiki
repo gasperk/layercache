@@ -2,8 +2,10 @@
 
 = Writing a custom backend =
 Writing a custom cache backend is very easy. All you need is a class with a getter and a setter:
-  - it has to implement get($key) and set($key, $value, $ttl) methods
-  - you have to ensure that get() returns *null* if item isn't present or is stale
+  * it has to implement get($key) and set($key, $value, $ttl) methods
+  * the $key is a string value (normalized key)
+  * $value can be any PHP variable; scalar, array, object.
+  * you have to ensure that get() returns *null* if item isn't present or is stale
 
 That's all.
 
