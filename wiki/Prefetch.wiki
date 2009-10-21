@@ -71,7 +71,7 @@ Ideal values (empirical):
   * prefetchProbability: calculated
   * prefetchCount: between 5 and 10
 
-Where prefetchCount / prefetchTime (prefetches per second) should be as small as possible.
+Where prefetchCount / prefetchTime (prefetches per second) should be as small as possible to reduce simultaneous reads.
 
 Not all items of the same class have equal requestsPerSecond. Some people are prettier than others, so their profile is accessed more often. The most often accessed items make the biggest difference, so choose your parameters according to the most accessed item's requestsPerSecond. Also, if prefetchCount for your most accessed item is 10, it's still in the safe margin for less accessed; for an item that is accessed twice less frequently, prefetchCount is still a safe 5.
 
