@@ -1,30 +1,9 @@
 #summary Specifying source
 
 = Specifying cache source =
-There are two ways to specify a cache source.
-
-== Specify a source object ==
-Pass an object to the forSource() method. The object must implement get($key) and normalizeKey($key) methods.
-
-{{{
-class MySource
-{
-  function get($key)
-  {
-    return "mydata";
-  }
-
-  function normalizeKey($key)
-  {
-    return "$key";
-  }
-}
-
-LayerCache::forSource(new MySource)-> ...
-}}}
 
 == Specify data and key callbacks ==
-The other way of specifying cache source is to pass two callbacks, one for data and one for key. Both callbacks can be [http://si.php.net/callback any type of callback that PHP supports]; object method, class (static) method, create_function construct, a closure (since PHP 5.3), and even a global function.
+To specify the source, you have to pass two callbacks for forSource() method; one is the data retrieval method, the other is a key mapping method (optional). Both callbacks can be [http://www.php.net/callback any type of callback that PHP supports]; object method, class (static) method, create_function construct, a closure (since PHP 5.3), and even a global function.
 
 
 An example of usage with Propel show how to use the existing retrieveByPK, along with a new mapKey method.
@@ -43,4 +22,22 @@ LayerCache::forSource(array('UserProfilePeer', 'retrieveByPK'), array('UserProfi
 Another Propel example, this time the key-function is a closure (PHP 5.3+).
 {{{
 LayerCache::forSource(array('UserProfilePeer', 'retrieveByPK'), function ($key) { return "user/$key"; })-> ...
+}}}
+
+Third example, this time without key mapper method (in this case, the key is used as-passed).
+{{{
+class UserProfileReader
+{
+  function __construct($db)
+  {
+    $this->db = $db;
+  }
+  
+  function read($user_id)
+  {
+    return $db->query(...);
+  }
+}
+$source = new UserProfileReader($db);
+LayerCache::forSource(array($source, 'read'))-> ...
 }}}
