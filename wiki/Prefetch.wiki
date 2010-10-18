@@ -26,13 +26,13 @@ To enable prefetch, you have to specify it for each cache you add to a stack.
 {{{
 LayerCache::
   forSource(new SomeDataSource)->
-  addCache(new LayerCache_Cache_Memcache($memcache))->withTTL(360)->withPrefetch(60, 0.01)->
-  addCache(new LayerCache_Cache_APC)->withTTL(60)->withPrefetch(10, 0.02)->
+  addLayer(new LayerCache_Cache_Memcache($memcache))->withTTL(360)->withPrefetch(60, 0.01)->
+  addLayer(new LayerCache_Cache_APC)->withTTL(60)->withPrefetch(10, 0.02)->
   toStack('data');
 }}}
 
 == Use only one prefetch per stack ==
-If you decide to use [Prefetch prefetch], you may want to only use it on one cache in the stack - preferably the last (the last added via addCache, the first that is accessed). While prefetch works fine on any number of layers, it's the probability that renders it unusable on every cache below the first cache with prefetch. Because requests for an item are already reduced by the first prefetch, which reduces the number of reads on the lower caches, it's very probable that items won't be prefetched on lower caches, because not enough requests will be made. It would be the same as with only one prefetch - the last one added via _withPrefetch_.
+If you decide to use [Prefetch prefetch], you may want to only use it on one cache in the stack - preferably the last (the last added via addLayer, the first that is accessed). While prefetch works fine on any number of layers, it's the probability that renders it unusable on every cache below the first cache with prefetch. Because requests for an item are already reduced by the first prefetch, which reduces the number of reads on the lower caches, it's very probable that items won't be prefetched on lower caches, because not enough requests will be made. It would be the same as with only one prefetch - the last one added via _withPrefetch_.
 
 == Choosing time and probability values ==
 These values are important for performance. If sub-optimal values are used, this can result in either under-prefetching or over-prefetching.
