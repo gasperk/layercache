@@ -19,7 +19,7 @@ class UserProfileSource
     $this->db = $db;
   }
   
-  function normalizeKey($key)
+  function mapKey($key)
   {
     return "userprofile/" . intval($key);
   }
@@ -40,11 +40,14 @@ $database = new PDO(...);
 $memcache = new Memcache;
 $memcache->connect('memcachehost');
 
+// create the source
+$source = new UserProfileSource($database);
+
 // create a stack named UserProfile
 LayerCache::
-  forSource(new UserProfileSource($database))->
-  addCache(new LayerCache_Cache_Memcache($memcache))->withTTL(3600)->
-  addCache(new LayerCache_Cache_APC())->withTTL(600)->
+  forSource(array($source, 'get'), array($source, 'mapKey'))->
+  addLayer(new LayerCache_Cache_Memcache($memcache))->withTTL(3600)->
+  addLayer(new LayerCache_Cache_APC())->withTTL(600)->
   toStack('UserProfile');
 }}}
 
@@ -62,7 +65,7 @@ Again, we must define a _source object_ first. This time, our source object won'
 {{{
 class SomethingCalculated
 {
-  function normalizeKey($key)
+  function flattenKey($key)
   {
     return "calc-{$key['a']}-{$key['b']}";
   }
@@ -77,9 +80,10 @@ class SomethingCalculated
 
 Prepare the cache stack:
 {{{
+$source = new SomethingCalculated();
 LayerCache::
-  forSource(new SomethingCalculated)->
-  addCache(new LayerCache_Cache_APC)->withTTL(600)->
+  forSource(array($source, 'get'), array($source, 'flattenKey'))->
+  addLayer(new LayerCache_Cache_APC)->withTTL(600)->
   toStack('calc');
 }}}
 
