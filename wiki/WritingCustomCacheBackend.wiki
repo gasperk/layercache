@@ -32,8 +32,8 @@ class ArrayCache
 Now let's use this.
 {{{
 LayerCache::
-  forSource(new SomeSource)->
-  addCache(new ArrayCache)->
+  forSource('data_fetch_func', 'key_map_func')->
+  addLayer(new ArrayCache)->
   toStack('items');
 
 echo LayerCache::stack('items')->get('a');
